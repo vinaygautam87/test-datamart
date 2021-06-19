@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     src_list = app_conf["source_list"]
     for src in src_list:
-        src = upper(src)
+        src = upper(str(src))
         output_path = app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
         if src == 'OL':
             print('Read loyalty data from SFTP folder and write it to S3 bucket')
