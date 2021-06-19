@@ -29,6 +29,7 @@ if __name__ == '__main__':
     hadoop_conf.set("fs.s3a.secret.key", app_secret["s3_conf"]["secret_access_key"])
 
     src_list = app_conf["source_list"]
+    # Check if passed from cmd line arg then override the above (e.g. source_list=OL,SB)
     for src in src_list:
         output_path = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
         src_conf = app_conf[src]
@@ -45,7 +46,6 @@ if __name__ == '__main__':
                 .load(src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.withColumn("ins_dt", current_date())
             ol_txn_df.show(5, False)
-            print('outputpath', output_path)
             ut.write_to_s3(ol_txn_df, output_path)
 
         elif src == 'SB':

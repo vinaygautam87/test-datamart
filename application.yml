@@ -1,5 +1,5 @@
 source_list:
-  - OL
+  - SB
 
 OL:
   sftp_conf:
@@ -12,7 +12,6 @@ SB:
   mysql_conf:
     dbtable: testdb.TRANSACTIONSYNC
     partition_column: App_Transaction_Id
-    query : "(select * from testdb.TRANSACTIONSYNC ') as t"
 
 CP:
   s3_conf:
