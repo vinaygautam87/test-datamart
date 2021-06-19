@@ -15,6 +15,7 @@ def get_mysql_jdbc_url(mysql_config: dict):
     return "jdbc:mysql://{}:{}/{}?autoReconnect=true&useSSL=false".format(host, port, database)
 
 def write_to_s3(df, path):
+    print('Writing data to', path)
     df.write \
         .mode("append") \
         .partitionBy("ins_dt") \

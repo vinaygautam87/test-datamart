@@ -45,6 +45,7 @@ if __name__ == '__main__':
                 .load(src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.withColumn("ins_dt", current_date())
             ol_txn_df.show(5, False)
+            print('outputpath', output_path)
             ut.write_to_s3(ol_txn_df, output_path)
 
         elif src == 'SB':
