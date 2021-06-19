@@ -31,6 +31,7 @@ if __name__ == '__main__':
     src_list = app_conf["source_list"]
     for src in src_list:
         output_path = app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
+        src_conf = app_conf[src]
         if src == 'OL':
             print('Read loyalty data from SFTP folder and write it to S3 bucket')
             ol_txn_df = spark.read\
@@ -41,7 +42,7 @@ if __name__ == '__main__':
                 .option("pem", os.path.abspath(current_dir + "/../../" + app_secret["sftp_conf"]["pem"]))\
                 .option("fileType", "csv")\
                 .option("delimiter", "|")\
-                .load(app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
+                .load(src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
             ol_txn_df = ol_txn_df.witholumn("ins_dt", current_date())
             ol_txn_df.show(5, False)
             ut.write_to_s3(ol_txn_df, output_path)
@@ -51,9 +52,9 @@ if __name__ == '__main__':
             jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
                           "lowerBound": "1",
                           "upperBound": "100",
-                          "dbtable": app_conf["mysql_conf"]["dbtable"],
+                          "dbtable": src_conf["mysql_conf"]["dbtable"],
                           "numPartitions": "2",
-                          "partitionColumn": app_conf["mysql_conf"]["partition_column"],
+                          "partitionColumn": src_conf["mysql_conf"]["partition_column"],
                           "user": app_secret["mysql_conf"]["username"],
                           "password": app_secret["mysql_conf"]["password"]
                            }
@@ -75,7 +76,7 @@ if __name__ == '__main__':
                 .option("header", "false") \
                 .option("delimiter", "|") \
                 .option("inferSchema", "true") \
-                .csv("s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/KC_Extract_1_20171009.csv")
+                .csv("s3a://" + src_conf["s3_conf"]["s3_bucket"] + "/KC_Extract_1_20171009.csv")
             cp_df = cp_df.witholumn("ins_dt", current_date())
             ut.write_to_s3(cp_df, output_path)
 
@@ -83,8 +84,8 @@ if __name__ == '__main__':
             cust_addr = spark\
                 .read\
                 .format("com.mongodb.spark.sql.DefaultSource")\
-                .option("database", app_conf["mongodb_config"]["database"])\
-                .option("collection", app_conf["mongodb_config"]["collection"])\
+                .option("database", src_conf["mongodb_config"]["database"])\
+                .option("collection", src_conf["mongodb_config"]["collection"])\
                 .load()
             cust_addr = cust_addr.witholumn("ins_dt", current_date())
             cust_addr.show()
