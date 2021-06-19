@@ -88,6 +88,14 @@ if __name__ == '__main__':
                 .option("database", src_conf["mongodb_config"]["database"])\
                 .option("collection", src_conf["mongodb_config"]["collection"])\
                 .load()
+            cust_addr = cust_addr\
+                .select(col("consumer_id"),
+                        col("mobile-no").alias("mobile"),
+                        col("address.street").alias("address"),
+                        col("address.city").alias("city"),
+                        col("address.state").alias("state")
+                        )
+            # "consumer_id":"I034867789V","address":{"street":"aca","city":"bangalore","state":"karnataka"},"mobile-no":"7789327282"}
             cust_addr = cust_addr.withColumn("ins_dt", current_date())
             cust_addr.show()
             ut.write_to_s3(cust_addr, output_path)
