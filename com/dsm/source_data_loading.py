@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 .option("header", "false") \
                 .option("delimiter", "|") \
                 .option("inferSchema", "true") \
-                .csv("s3a://" + src_conf["s3_conf"]["s3_bucket"] + src_conf["s3_conf"]["filename"])
+                .csv("s3a://" + src_conf["s3_conf"]["s3_bucket"] + "/" + src_conf["s3_conf"]["filename"])
             cp_df = cp_df.withColumn("ins_dt", current_date())
             ut.write_to_s3(cp_df, output_path)
 
