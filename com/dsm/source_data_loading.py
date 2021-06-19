@@ -43,7 +43,7 @@ if __name__ == '__main__':
                 .option("fileType", "csv")\
                 .option("delimiter", "|")\
                 .load(src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")
-            ol_txn_df = ol_txn_df.witholumn("ins_dt", current_date())
+            ol_txn_df = ol_txn_df.withColumn("ins_dt", current_date())
             ol_txn_df.show(5, False)
             ut.write_to_s3(ol_txn_df, output_path)
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 .option("driver", "com.mysql.cj.jdbc.Driver")\
                 .options(**jdbc_params)\
                 .load()
-            txn_df = txn_df.witholumn("ins_dt", current_date())
+            txn_df = txn_df.withColumn("ins_dt", current_date())
             txn_df.show()
             ut.write_to_s3(txn_df, output_path)
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 .option("delimiter", "|") \
                 .option("inferSchema", "true") \
                 .csv("s3a://" + src_conf["s3_conf"]["s3_bucket"] + "/KC_Extract_1_20171009.csv")
-            cp_df = cp_df.witholumn("ins_dt", current_date())
+            cp_df = cp_df.withColumn("ins_dt", current_date())
             ut.write_to_s3(cp_df, output_path)
 
         elif src == 'ADDR':
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 .option("database", src_conf["mongodb_config"]["database"])\
                 .option("collection", src_conf["mongodb_config"]["collection"])\
                 .load()
-            cust_addr = cust_addr.witholumn("ins_dt", current_date())
+            cust_addr = cust_addr.withColumn("ins_dt", current_date())
             cust_addr.show()
             ut.write_to_s3(cust_addr, output_path)
 
