@@ -3,6 +3,10 @@ from pyspark.sql.functions import *
 import utils.utilities as ut
 import yaml
 import os.path
+#added later
+import os
+import sys
+
 
 if __name__ == '__main__':
     current_dir = os.path.abspath(os.path.dirname(__file__))
@@ -13,6 +17,14 @@ if __name__ == '__main__':
     app_conf = yaml.load(conf, Loader=yaml.FullLoader)
     secret = open(app_secrets_path)
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
+
+    #parse parameter here
+    n = int(sys.argv[1])
+    a = 2
+    cmd_parms = []
+    for _ in range(n):
+        cmd_parms.append(sys.argv[a])
+        a += 1
 
     # Create the SparkSession
     spark = SparkSession \
@@ -29,10 +41,12 @@ if __name__ == '__main__':
 
     src_list = app_conf["source_list"]
     # Check if passed from cmd line arg then override the above (e.g. source_list=OL,SB)
-    for src in src_list:
+    src1 = sys.argv[1]
+    #for src in src_list:
+    for src1 in cmd_parms:
         output_path = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
-        src_conf = app_conf[src]
-        if src == 'OL':
+        src_conf = app_conf[src1]
+        if src1 == 'OL':
             print('Read loyalty data from SFTP folder and write it to S3 bucket')
             ol_txn_df = spark.read\
                 .format("com.springml.spark.sftp")\
@@ -47,7 +61,7 @@ if __name__ == '__main__':
             ol_txn_df.show(5, False)
             ut.write_to_s3(ol_txn_df, output_path)
 
-        elif src == 'SB':
+        elif src1 == 'SB':
             print('Read sales data from MySQL db and write it to S3 bucket')
             jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
                           "lowerBound": "1",
@@ -69,7 +83,7 @@ if __name__ == '__main__':
             txn_df.show()
             ut.write_to_s3(txn_df, output_path)
 
-        elif src == 'CP':
+        elif src1 == 'CP':
             print("\nReading customers data from S3 and write it to s3") # kc_extract.. KC_Extract_1_20171009
             cp_df = spark.read \
                 .option("mode", "DROPMALFORMED") \
@@ -80,7 +94,7 @@ if __name__ == '__main__':
             cp_df = cp_df.withColumn("ins_dt", current_date())
             ut.write_to_s3(cp_df, output_path)
 
-        elif src == 'ADDR':
+        elif src1 == 'ADDR':
             cust_addr = spark\
                 .read\
                 .format("com.mongodb.spark.sql.DefaultSource")\
@@ -100,4 +114,4 @@ if __name__ == '__main__':
             ut.write_to_s3(cust_addr, output_path)
 
 
-# spark-submit --packages "org.apache.hadoop:hadoop-aws:2.7.4,org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/dsm/source_data_loading.py
+# spark-submit --packages "org.apache.hadoop:hadoop-aws:2.7.4,org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/dsm/src_data__load_2.py
