@@ -19,12 +19,8 @@ if __name__ == '__main__':
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
 
     #parse parameter here
-    n = int(sys.argv[1])
-    a = 2
     cmd_parms = []
-    for _ in range(n):
-        cmd_parms.append(sys.argv[a])
-        a += 1
+    cmd_parms.append(sys.argv[1])
 
     # Create the SparkSession
     spark = SparkSession \
@@ -44,7 +40,7 @@ if __name__ == '__main__':
     src1 = sys.argv[1]
     #for src in src_list:
     for src1 in cmd_parms:
-        output_path = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
+        output_path = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src1
         src_conf = app_conf[src1]
         if src1 == 'OL':
             print('Read loyalty data from SFTP folder and write it to S3 bucket')
