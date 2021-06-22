@@ -1,5 +1,5 @@
 source_list:
-  - ADDR
+  - SB
 
 OL:
   sftp_conf:
