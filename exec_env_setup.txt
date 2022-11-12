@@ -1,4 +1,4 @@
-# Setting up Git and Code Repo locally
+# Setting up Git and Code Repo locally in sys
 # --------------------------------------------
 # Install Git client software in your local system
 # Login to Git and create repo
