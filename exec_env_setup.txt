@@ -1,7 +1,7 @@
 # Setting up Git and Code Repo locally
 # --------------------------------------------
 # Install Git client software in your local system
-# Login to Git and create repo
+# Login to Git and create repos
 # Git clone, checkout and pull locally
 git clone <repo_url>
 git checkput
